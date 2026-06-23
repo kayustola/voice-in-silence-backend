@@ -42,25 +42,7 @@ class ContactCreateView(generics.CreateAPIView):
     queryset = ContactMessage.objects.all()
     serializer_class = ContactMessageSerializer
 
-    def perform_create(self, serializer):
-        contact = serializer.save()
+   def perform_create(self, serializer):
+    serializer.save()
 
-        # SAFE: wrap email so backend won't crash
-        try:
-            send_mail(
-                subject="New Portfolio Contact Message",
-                message=f"Name: {contact.name}\nEmail: {contact.email}\n\n{contact.message}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[settings.EMAIL_HOST_USER],
-                fail_silently=True,
-            )
-
-            send_mail(
-                subject="Thanks for contacting me",
-                message="I received your message and will reply soon.",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[contact.email],
-                fail_silently=True,
-            )
-        except Exception as e:
-            print("Email failed:", e)
+       
