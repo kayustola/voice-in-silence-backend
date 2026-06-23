@@ -1,7 +1,8 @@
 from rest_framework import generics
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
-
+from django.core.mail import send_mail
+from django.conf import settings
 
 # POSTS
 class PostListView(generics.ListAPIView):
@@ -38,3 +39,37 @@ from .serializers import ContactMessageSerializer
 class ContactCreateView(generics.CreateAPIView):
     queryset = ContactMessage.objects.all()
     serializer_class = ContactMessageSerializer
+
+    def perform_create(self, serializer):
+        contact = serializer.save()
+
+        send_mail(
+            subject="New Portfolio Contact Message",
+            message=f"""
+Name: {contact.name}
+Email: {contact.email}
+
+Message:
+{contact.message}
+""",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.EMAIL_HOST_USER],
+            fail_silently=False,
+        )
+
+        send_mail(
+            subject="Thanks for contacting Kayus Tola",
+            message=f"""
+Hi {contact.name},
+
+Thanks for reaching out through my portfolio.
+
+I’ve received your message and will get back to you soon.
+
+Regards,
+Kayus Tola
+""",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[contact.email],
+            fail_silently=False,
+        )
