@@ -1,8 +1,7 @@
 from rest_framework import generics
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
-from django.core.mail import send_mail
-from django.conf import settings
+
 
 # POSTS
 class PostListView(generics.ListAPIView):
@@ -35,6 +34,8 @@ class CommentDeleteView(generics.DestroyAPIView):
 from rest_framework import generics
 from .models import ContactMessage
 from .serializers import ContactMessageSerializer
+from django.core.mail import send_mail
+from django.conf import settings
 
 class ContactCreateView(generics.CreateAPIView):
     queryset = ContactMessage.objects.all()
