@@ -39,6 +39,15 @@ class CommentDeleteView(generics.DestroyAPIView):
 
 
 # CONTACT (FIXED)
+import os
+import resend
+from rest_framework import generics
+from .models import ContactMessage
+from .serializers import ContactMessageSerializer
+
+resend.api_key = os.environ.get("RESEND_API_KEY")
+
+
 class ContactCreateView(generics.CreateAPIView):
     queryset = ContactMessage.objects.all()
     serializer_class = ContactMessageSerializer
@@ -46,25 +55,22 @@ class ContactCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         contact = serializer.save()
 
-        # AUTO REPLY EMAIL
-        try:
-            send_mail(
-                subject="Thanks for contacting Voice in Silence",
-                message=f"""
-Hi {contact.name},
+        resend.Emails.send({
+            "from": "Voice in Silence <onboarding@resend.dev>",
+            "to": [contact.email],
+            "subject": "Thanks for contacting Voice in Silence",
+            "html": f"""
+            <h2>Hi {contact.name},</h2>
 
-Thanks for reaching out.
+            <p>Thank you for reaching out to <strong>Voice in Silence</strong>.</p>
 
-We received your message:
-"{contact.message}"
+            <p>I have received your message and I'll get back to you as soon as possible.</p>
 
-We will get back to you soon.
+            <p>God bless you.</p>
 
-— Voice in Silence
-""",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[contact.email],
-                fail_silently=True,
-            )
-        except Exception:
-            pass
+            <br>
+
+            <strong>Kayustola</strong><br>
+            Voice in Silence
+            """
+        })
