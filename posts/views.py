@@ -57,20 +57,21 @@ class ContactCreateView(generics.CreateAPIView):
 
         resend.Emails.send({
             "from": "Voice in Silence <onboarding@resend.dev>",
-            "to": [contact.email],
-            "subject": "Thanks for contacting Voice in Silence",
+            "to": ["voiceinsilence07@gmail.com"],
+            "subject": f"📩 New Contact Form Submission from {contact.name}",
             "html": f"""
-            <h2>Hi {contact.name},</h2>
+            <h2>New Contact Form Submission</h2>
 
-            <p>Thank you for reaching out to <strong>Voice in Silence</strong>.</p>
+            <p><strong>Name:</strong> {contact.name}</p>
 
-            <p>I have received your message and I'll get back to you as soon as possible.</p>
+            <p><strong>Email:</strong> {contact.email}</p>
 
-            <p>God bless you.</p>
+            <p><strong>Message:</strong></p>
 
-            <br>
+            <p>{contact.message}</p>
 
-            <strong>Kayustola</strong><br>
-            Voice in Silence
+            <hr>
+
+            <p>Sent from your Voice in Silence website.</p>
             """
         })
